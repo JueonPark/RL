@@ -357,7 +357,7 @@ def deep_q_learning(sess,
             ## [Your task5] ## Take a step (REFER: Task3)
             ############################################################################
             action_probs = policy(sess, state, epsilon)
-            action = np.random.choice(np.average(len(action_probs)), p=action_probs)
+            action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
             next_state, reward, done, _ = env.step(valid_actions[action])
             next_state = state_processor.process(sess, next_state)
             next_state = np.append(state[:, :, 1:], np.expand_dims(next_state, 2), axis=2)
