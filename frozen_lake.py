@@ -102,7 +102,7 @@ class FrozenLakeEnv(discrete.DiscreteEnv):
         self.nrow, self.ncol = nrow, ncol = desc.shape
         self.reward_range = (0, 1)
 
-        nA = 4
+        nA = 10
         nS = nrow * ncol
 
         isd = np.array(desc == b'S').astype('float64').ravel()
@@ -114,6 +114,7 @@ class FrozenLakeEnv(discrete.DiscreteEnv):
             return row*ncol + col
 
         def inc(row, col, a):
+            a = a % 4
             if a == LEFT:
                 col = max(col - 1, 0)
             elif a == DOWN:
@@ -135,14 +136,14 @@ class FrozenLakeEnv(discrete.DiscreteEnv):
         for row in range(nrow):
             for col in range(ncol):
                 s = to_s(row, col)
-                for a in range(4):
+                for a in range(10):
                     li = P[s][a]
                     letter = desc[row, col]
                     if letter in b'GH':
                         li.append((1.0, s, 0, True))
                     else:
                         if is_slippery:
-                            for b in [(a - 1) % 4, a, (a + 1) % 4]:
+                            for b in [(a - 1) % 10, a, (a + 1) % 10]:
                                 li.append((
                                     1. / 3.,
                                     *update_probability_matrix(row, col, b)

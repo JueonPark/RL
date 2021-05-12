@@ -139,6 +139,6 @@ def n_step_SARSA(env, n, num_episodes, discount_factor=0.9,
     return Q, stats
 
 
-Q, stats = n_step_SARSA(env, n=4, num_episodes=20000)
+Q, stats = n_step_SARSA(env, n=10, num_episodes=20000)
 
 plotting.plot_episode_stats(stats)
