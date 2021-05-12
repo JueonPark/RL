@@ -342,11 +342,8 @@ def deep_q_learning(sess,
 
             ## [Your task4] ## Update the target estimator and print "Copied model parameters to target network."
             ############################################################################
-            summary = tf.Summary()
-            summary.value.add(simple_value=epsilon, tag="epsilon")
-            q_estimator.summary_writer.add_summary(summary, total_t)
+            # TODO: 뭔가 허전한데...
             if (total_t % update_target_estimator == 0):
-                # copy
                 print("\nCopied model parameters to target network.")
             ############################################################################
         
