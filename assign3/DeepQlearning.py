@@ -342,8 +342,8 @@ def deep_q_learning(sess,
 
             ## [Your task4] ## Update the target estimator and print "Copied model parameters to target network."
             ############################################################################
-            # TODO: 뭔가 허전한데...
             if (total_t % update_target_estimator == 0):
+                estimator_copy.make(sess)
                 print("\nCopied model parameters to target network.")
             ############################################################################
         
