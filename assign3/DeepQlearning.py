@@ -87,8 +87,7 @@ class Estimator():
 
         ## [Your task1] ## Calculate the loss by using tf.squared_difference and tf.reduce_mean
         ############################################################################
-        # self.loss = 
-
+        self.loss = tf.reduce_mean(tf.squared_difference(self.y_place, self.action_predictions))
         ############################################################################
 
         # Optimizer Parameters from original paper
@@ -200,13 +199,13 @@ def make_epsilon_greedy_policy(estimator, nA):
         ## [Your task2] ## Epsilon-greddy policy
         ############################################################################
         # (1) Define 1d array
-        # A = 
+        A = np.ones(nA, dtype=float) * epsilon / nA
         # (2) Returns q values for a given state by using estimator
-
+        q_val = estimator.predict(sess, np.expand_dims(observation, 0))[0]
         # (3) Find the action that maximizes input q_value
-
+        max_act = np.argmax(q_val)
         # (4) 1-\epsilon+\epsilon/nA(in case of best action)
-
+        A[max_act] = A[max_act] + 1 - epsilon
         ############################################################################
 
         return A
@@ -307,9 +306,9 @@ def deep_q_learning(sess,
         ## [Your task3] ## 
         ############################################################################
         # (1) # Pick the first action (action sampling based on probability vector) by using np.random.choice
-
+        action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
         # (2) Take a step
-
+        next_state, reward, done, _ = env.step(valid_actions[action])
         ############################################################################
         next_state = state_processor.process(sess, next_state)
         next_state = np.append(state[:,:,1:], np.expand_dims(next_state, 2), axis=2)
@@ -343,9 +342,12 @@ def deep_q_learning(sess,
 
             ## [Your task4] ## Update the target estimator and print "Copied model parameters to target network."
             ############################################################################
-            # if 
-
-                # print("\nCopied model parameters to target network.")
+            summary = tf.Summary()
+            summary.value.add(simple_value=epsilon, tag="epsilon")
+            q_estimator.summary_writer.add_summary(summary, total_t)
+            if (total_t % update_target_estimator == 0):
+                # copy
+                print("\nCopied model parameters to target network.")
             ############################################################################
         
 
@@ -357,11 +359,11 @@ def deep_q_learning(sess,
 
             ## [Your task5] ## Take a step (REFER: Task3)
             ############################################################################
-            
-            
-
-
-
+            action_probs = policy(sess, state, epsilon)
+            action = np.random.choice(np.average(len(action_probs)), p=action_probs)
+            next_state, reward, done, _ = env.step(valid_actions[action])
+            next_state = state_processor.process(sess, next_state)
+            next_state = np.append(state[:, :, 1:], np.expand_dims(next_state, 2), axis=2)
             ############################################################################
             
             # If our replay memory is full, pop the first element
@@ -380,16 +382,19 @@ def deep_q_learning(sess,
             ## [Your task6] ## 
             ############################################################################
             # (1) Sample a minibatch from the replay memory by using random.sample
-            #samples = 
-            
+            samples = random.sample(replay_memory, batch_size)
             states_batch, action_batch, reward_batch, next_states_batch, done_batch = map(np.array, zip(*samples))
 
             # (2) Calculate q values and targets
-            
-
+            next_q_val = q_estimator.predict(sess, next_states_batch)
+            max_acts = np.argmax(next_q_val, axis=1)
+            next_q_val_target = target_estimator.predict(sess, next_states_batch)
+            targets_batch = reward_batch + np.invert(done_batch).astype(np.float32) * \
+                        discount_factor * next_q_val_target[np.arange(batch_size), max_acts]
         
             # (3) Perform gradient descent update
-            
+            states_batch = np.array(states_batch)
+            loss = q_estimator.update(sess, states_batch, action_batch, targets_batch)
             
             ############################################################################
             
