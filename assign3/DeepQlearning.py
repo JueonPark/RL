@@ -446,19 +446,13 @@ with tf.Session() as sess:
 ############################################################################
 # Write your answer for problem 1. (c) in below:
 ############################################################################
+# q_estimator: Estimator object used for the q values
+# - q_val을 predict하는데 쓰인다.
+# - state space가 매우 크기 때문에 function approximation을 써서 Q value를 계산해야 한다.
+#   이때 주로 Neural Network를 돌리곤 한다.
+# - q_estimator는 이를 위해서 sess를 돌리고, 이를 통해서 q_val을 구한다.
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+# target_estimator: Estimator object used for the targets
+# - next_q_val_target을 predict하는데 쓰인다.
+# - 위와 비슷한 논리로 Neural Network를 돌려서 다음 q value를 구한다.
 ############################################################################
